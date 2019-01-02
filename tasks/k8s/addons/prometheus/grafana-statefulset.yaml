@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: grafana
+  namespace: kube-system
+  labels:
+    k8s-app: grafana
+    kubernetes.io/cluster-service: "true"
+    addonmanager.kubernetes.io/mode: Reconcile
+    version: v2.2.1
+spec:
+  serviceName: "grafana"
+  replicas: 1
+  podManagementPolicy: "Parallel"
+  updateStrategy:
+   type: "RollingUpdate"
+  selector:
+    matchLabels:
+      k8s-app: grafana
+  template:
+    metadata:
+      labels:
+        k8s-app: grafana
+      annotations:
+        scheduler.alpha.kubernetes.io/critical-pod: ''
+    spec:
+      priorityClassName: system-cluster-critical
+      containers:
+        - name: grafana-server
+          image: "10.16.16.4:5000/grafana/grafana:v5.4.2"
+          imagePullPolicy: "IfNotPresent"
+          ports:
+            - containerPort: 3000
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 30
+            timeoutSeconds: 30
+          # based on 10 running nodes with 30 pods each
+          resources:
+            limits:
+              cpu: 200m
+              memory: 1000Mi
+            requests:
+              cpu: 200m
+              memory: 1000Mi
+            
+          volumeMounts:
+            - name: grafana-data
+              mountPath: /var/lib/grafana
+              subPath: ""
+      terminationGracePeriodSeconds: 300
+  volumeClaimTemplates:
+  - metadata:
+      name: grafana-data
+    spec:
+      storageClassName: standard
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: "2Gi"

@@ -1,0 +1,37 @@
+---
+apiVersion: kubeadm.k8s.io/v1alpha1
+kind: MasterConfiguration
+api:
+  advertiseAddress: 10.16.16.4
+  bindPort: 6443
+  controlPlaneEndpoint: 10.16.16.8:443
+kubernetesVersion: 1.11.5
+authorizationModes:
+- Node
+- RBAC
+certificatesDir: /etc/kubernetes/pki
+cloudProvider: ""
+etcd:
+  caFile: ""
+  certFile: ""
+  keyFile: ""
+  dataDir: /data/main-etcd
+  endpoints:
+  - http://10.16.16.4:2379
+  - http://10.16.16.5:2379
+  - http://10.16.16.6:2379
+token: ""
+tokenTTL: 0s
+apiServerCertSANs:
+- localhost
+- 127.0.0.1
+- api.kubernetes.local
+- api.kubernetes.local
+- 10.16.16.4
+- 10.16.16.5
+- 10.16.16.6
+
+networking:
+  dnsDomain: kubernetes.local
+  podSubnet: 10.244.0.0/16
+  serviceSubnet: 10.163.240.0/20

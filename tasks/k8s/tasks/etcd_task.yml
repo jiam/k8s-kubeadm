@@ -1,0 +1,27 @@
+---
+
+
+- name: crate deploy dir
+  file:
+    path: /software/etcd
+    state: directory
+    mode: 0755
+
+- name: deploy etcd  bin
+  copy: 
+    src: /opt/etcd/etcd
+    dest: /software/etcd/etcd
+    mode: 0755
+
+- name: deploy systemd config
+  template: 
+    src: etcd_systemd.j2
+    dest: /etc/systemd/system/etcd.service
+
+
+- name: restart etcd
+  systemd:
+    name: etcd
+    state: restarted
+    daemon_reload: yes
+    enabled: yes

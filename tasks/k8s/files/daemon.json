@@ -1,0 +1,18 @@
+{
+    "live-restore": true,
+    "log-driver": "json-file",
+    "log-opts": {
+        "max-size": "500m",
+        "max-file": "2"
+    },
+    "storage-driver": "overlay2",
+    "storage-opts": [
+        "overlay2.override_kernel_check=true"
+    ],
+    "graph": "/data/docker",
+    "bip": "192.168.0.1/16",
+    "insecure-registries": ["10.16.16.4:5000"],
+    "exec-opts": ["native.cgroupdriver=systemd"],
+    "max-concurrent-downloads": 10,
+    "registry-mirrors": ["https://docker.mirrors.ustc.edu.cn"]
+}

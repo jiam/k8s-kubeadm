@@ -1,0 +1,37 @@
+---
+
+
+- name: copy rpm
+  copy: 
+    src: "/opt/docker/{{ item }}"
+    dest: /opt/
+  with_items:
+    - docker-ce-selinux-17.03.2.ce-1.el7.centos.noarch.rpm 
+    - docker-ce-17.03.2.ce-1.el7.centos.x86_64.rpm
+
+
+- name: yum localinstall docker
+  yum: 
+    name: 
+      - /opt/docker-ce-selinux-17.03.2.ce-1.el7.centos.noarch.rpm
+      - /opt/docker-ce-17.03.2.ce-1.el7.centos.x86_64.rpm
+
+- name:
+  file:
+    path: /etc/docker
+    state: directory 
+
+- name: copy docker  daemon 
+  copy:
+    src: files/daemon.json 
+    dest: /etc/docker/daemon.json
+
+- name: restart docker
+  systemd:
+    name: docker
+    state: restarted
+    daemon_reload: yes
+    enabled: yes
+    
+
+
