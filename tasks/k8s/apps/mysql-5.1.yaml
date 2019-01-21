@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mysql-5.1
+spec:
+  containers:
+  - name: mysql-5-1
+    image: 10.16.16.4:5000/mysql/mysql:5.1.73
+    env:
+    - name: MYSQL_ROOT_PASSWORD
+      value: "12345678"
+    args:
+    - mysqld
+    - --log-bin
+    - --datadir=/var/lib/mysql
+    - --user=mysql
+    - --binlog-format=ROW
+    - --server-id=1
+    volumeMounts:
+        - name: mysql
+          mountPath: /var/lib/mysql
+  volumes:
+  - name: mysql
+    hostPath:
+      path: /opt/data/mysql
+
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: kubernetes.io/hostname
+            operator: In
+            values:
+            - k8s2
+
+

@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: otter-node
+spec:
+  containers:
+  - name: otter-node
+    image: 10.16.16.4:5000/canal/otter-all
