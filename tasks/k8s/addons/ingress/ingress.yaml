@@ -1,0 +1,13 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: example-ingress
+spec:
+  rules:
+    - host: example.foo.com
+      http:
+        paths:
+        - path: /
+          backend:
+            serviceName: eyewitness-labradoodle-nginx
+            servicePort: 8888

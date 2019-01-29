@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: otter-test
+spec:
+  containers:
+  - name: otter-test
+    image: 10.16.16.4:5000/canal/otter-all:test
+    volumeMounts:
+    - mountPath: /var/lib/mysql
+      name: mysql-volume
+    - mountPath: /home/admin/zkData
+      name: zk-volume
+  volumes:
+  - name: mysql-volume
+    hostPath:
+      path: /opt/data/mysql
+      type: Directory
+  - name: zk-volume
+    hostPath:
+      path: /opt/data/zk
+      type: Directory
+
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: kubernetes.io/hostname
+            operator: In
+            values:
+            - k8s1
