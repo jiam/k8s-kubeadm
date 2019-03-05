@@ -1,0 +1,46 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: csd-mysql
+  namespace: csd-fusion
+  labels:
+    k8s-app: csd-mysql
+spec:
+  containers:
+  - name: csd-mysql
+    image: 10.16.16.4:5000/mysql/mysql:5.7
+    env:
+    - name: MYSQL_ROOT_PASSWORD
+      value: "12345678"
+    args:
+    - mysqld
+    - --log-bin
+    - --datadir=/var/lib/mysql
+    - --user=mysql
+    - --binlog-format=ROW
+    - --server-id=1
+    - --sql_mode=NO_ENGINE_SUBSTITUTION,STRICT_TRANS_TABLES
+
+    resources:
+      limits:
+        cpu: 1000m
+        memory: 2Gi
+      requests:
+        cpu: 1000m
+        memory: 2Gi
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: csd-mysql
+  namespace: csd-fusion
+  labels:
+    k8s-app: csd-mysql
+spec:
+  selector:
+    k8s-app: csd-mysql
+  ports:
+  - port: 3306
+    targetPort: 3306

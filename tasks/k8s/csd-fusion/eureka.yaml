@@ -1,0 +1,198 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: csd-eureka-1
+  namespace: csd-fusion
+  labels:
+    k8s-app: csd-eureka-1
+spec:
+  serviceName: csd-eureka-1
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s-app: csd-eureka-1
+  template:
+    metadata:
+      labels:
+        k8s-app: csd-eureka-1
+    spec:
+      containers:
+      - name: csd-eureka-1
+        image: 10.16.16.4:5000/csd-fusion/service-registry:0.0.1-SNAPSHOT-4976d31191e8725898cb8c7ad9c83352da371c3f
+        env:
+        - name: EUREKA_USER
+          value: admin
+        - name: EUREKA_PASSWORD
+          value: admin
+        - name: EUREKA_ENDPOINT
+          value: http://admin:admin@csd-eureka-2:8080/eureka,http://admin:admin@csd-eureka-3:8080/eureka
+        command: ["/tini", "--"]
+        args: 
+        - java
+        - -XX:+UnlockExperimentalVMOptions
+        - -XX:+UseCGroupMemoryLimitForHeap
+        - -XX:+HeapDumpOnOutOfMemoryError
+        - -XX:HeapDumpPath="./log/"
+        - -Duser.timezone=Asia/Shanghai
+        - -Dfile.encoding=UTF-8
+        - -jar 
+        - /home/admin/service-registry-0.0.1-SNAPSHOT.jar
+    
+        resources:
+          limits:
+            cpu: 1000m
+            memory: 2Gi
+          requests:
+            cpu: 1000m
+            memory: 2Gi
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: csd-eureka-1
+  namespace: csd-fusion
+  labels:
+    k8s-app: csd-eureka-1
+spec:
+  selector:
+    k8s-app: csd-eureka-1
+  clusterIP: None
+  ports:
+  - port: 8080
+    targetPort: 8080
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: csd-eureka-2
+  namespace: csd-fusion
+  labels:
+    k8s-app: csd-eureka-2
+spec:
+  serviceName: csd-eureka-2
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s-app: csd-eureka-2
+  template:
+    metadata:
+      labels:
+        k8s-app: csd-eureka-2
+    spec:
+      containers:
+      - name: csd-eureka-2
+        image: 10.16.16.4:5000/csd-fusion/service-registry:0.0.1-SNAPSHOT-4976d31191e8725898cb8c7ad9c83352da371c3f
+        env:
+        - name: EUREKA_USER
+          value: admin
+        - name: EUREKA_PASSWORD
+          value: admin
+        - name: EUREKA_ENDPOINT
+          value: http://admin:admin@csd-eureka-3:8080/eureka,http://admin:admin@csd-eureka-1:8080/eureka
+        command: ["/tini", "--"]
+        args:
+        - java
+        - -XX:+UnlockExperimentalVMOptions
+        - -XX:+UseCGroupMemoryLimitForHeap
+        - -XX:+HeapDumpOnOutOfMemoryError
+        - -XX:HeapDumpPath="./log/"
+        - -Duser.timezone=Asia/Shanghai
+        - -Dfile.encoding=UTF-8
+        - -jar
+        - /home/admin/service-registry-0.0.1-SNAPSHOT.jar
+    
+        resources:
+          limits:
+            cpu: 1000m
+            memory: 2Gi
+          requests:
+            cpu: 1000m
+            memory: 2Gi
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: csd-eureka-2
+  namespace: csd-fusion
+  labels:
+    k8s-app: csd-eureka-2
+spec:
+  selector:
+    k8s-app: csd-eureka-2
+  clusterIP: None
+  ports:
+  - port: 8080
+    targetPort: 8080
+
+
+---
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: csd-eureka-3
+  namespace: csd-fusion
+  labels:
+    k8s-app: csd-eureka-3
+spec:
+  serviceName: csd-eureka-3
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s-app: csd-eureka-3
+  template:
+    metadata:
+      labels:
+        k8s-app: csd-eureka-3
+    spec:
+      containers:
+      - name: csd-eureka-3
+        image: 10.16.16.4:5000/csd-fusion/service-registry:0.0.1-SNAPSHOT-4976d31191e8725898cb8c7ad9c83352da371c3f
+        env:
+        - name: EUREKA_USER
+          value: admin
+        - name: EUREKA_PASSWORD
+          value: admin
+        - name: EUREKA_ENDPOINT
+          value: http://admin:admin@csd-eureka-1:8080/eureka,http://admin:admin@csd-eureka-2:8080/eureka
+        command: ["/tini", "--"]
+        args:
+        - java
+        - -XX:+UnlockExperimentalVMOptions
+        - -XX:+UseCGroupMemoryLimitForHeap
+        - -XX:+HeapDumpOnOutOfMemoryError
+        - -XX:HeapDumpPath="./log/"
+        - -Duser.timezone=Asia/Shanghai
+        - -Dfile.encoding=UTF-8
+        - -jar
+        - /home/admin/service-registry-0.0.1-SNAPSHOT.jar
+    
+        resources:
+          limits:
+            cpu: 1000m
+            memory: 2Gi
+          requests:
+            cpu: 1000m
+            memory: 2Gi
+    
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: csd-eureka-3
+  namespace: csd-fusion
+  labels:
+    k8s-app: csd-eureka-3                                                                                                                                                                                                  
+spec:                                                                                                                                                                                                                       
+  selector:                                                                                                                                                                                                                 
+    k8s-app: csd-eureka-3                                                                                                                                                                                                  
+  clusterIP: None
+  ports:                                                                                                                                                                                                                    
+  - port: 8080                                                                                                                                                                                                              
+    targetPort: 8080 

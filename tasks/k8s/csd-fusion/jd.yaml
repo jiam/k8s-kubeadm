@@ -1,0 +1,74 @@
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: resource-provider-jdcloud
+  namespace: csd-fusion
+  labels:
+    k8s-app: resource-provider-jdcloud
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s-app: resource-provider-jdcloud
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  template:
+    metadata:
+      labels:
+        k8s-app: resource-provider-jdcloud
+    spec:
+      containers:
+      - name: resource-provider-jdcloud
+        image: 10.16.16.4:5000/csd-fusion/resource-provider-jdcloud:0.0.2-SNAPSHOT-97aa42e9f86fa7f1dfa9187b8a6be1063d14ad48
+        env:
+        - name: DATABASE_URL
+          value: jdbc:mysql://csd-mysql:3306/cloud_provider
+        - name: DATABASE_USERNAME
+          value: root
+        - name: DATABASE_PASSWORD
+          value: "12345678"
+        - name: ZIPKIN_SERVER
+          value: zipkin 
+        - name: ZIPKIN_PERCENTAGE
+          value: "1"
+        - name: EUREKA_ENDPOINT
+          value: http://admin:admin@csd-eureka-1:8080/eureka,http://admin:admin@csd-eureka-2:8080/eureka,http://admin:admin@csd-eureka-3:8080/eureka
+        command: ["/tini", "--"]
+        args: 
+        - java
+        - -XX:+UnlockExperimentalVMOptions
+        - -XX:+UseCGroupMemoryLimitForHeap
+        - -XX:+HeapDumpOnOutOfMemoryError
+        - -XX:HeapDumpPath="./log/"
+        - -Duser.timezone=Asia/Shanghai
+        - -Dfile.encoding=UTF-8
+        - -jar 
+        - /home/admin/resource-provider-jdcloud-0.0.2-SNAPSHOT.jar
+        resources:
+          limits:
+            cpu: 1000m
+            memory: 2Gi
+          requests:
+            cpu: 1000m
+            memory: 2Gi
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: resource-provider-jdcloud
+  namespace: csd-fusion
+  labels:
+    k8s-app: resource-provider-jdcloud
+spec:
+  selector:
+    k8s-app: resource-provider-jdcloud
+  ports:
+  - port: 8080
+    targetPort: 8080
+
