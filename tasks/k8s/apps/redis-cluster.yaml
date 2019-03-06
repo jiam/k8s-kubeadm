@@ -11,6 +11,7 @@ data:
     cluster-config-file /var/lib/redis/nodes.conf
     cluster-node-timeout 5000
     dir /var/lib/redis
+    requirepass admin
     port 6379
 
 
@@ -19,9 +20,9 @@ data:
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: redis-app
+  name: redis-cluster
 spec:
-  serviceName: "redis-service"
+  serviceName: redis
   replicas: 6
   selector:
     matchLabels:
@@ -86,3 +87,21 @@ spec:
       resources:
         requests:
           storage: 200M
+
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+  labels:
+    app: redis
+spec:
+  ports:
+  - name: redis-port
+    protocol: "TCP"
+    port: 6379
+    targetPort: 6379
+  selector:
+    app: redis
+    appCluster: redis-cluster
