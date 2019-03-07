@@ -3,11 +3,13 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: rabbitmq 
+  namespace: csd-fusion
 ---
 kind: Role
 apiVersion: rbac.authorization.k8s.io/v1beta1
 metadata:
   name: endpoint-reader
+  namespace: csd-fusion
 rules:
 - apiGroups: [""]
   resources: ["endpoints"]
@@ -17,6 +19,7 @@ kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1beta1
 metadata:
   name: endpoint-reader
+  namespace: csd-fusion
 subjects:
 - kind: ServiceAccount
   name: rabbitmq
